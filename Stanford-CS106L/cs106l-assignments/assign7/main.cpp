@@ -18,8 +18,7 @@
  *
  * @note No modifications are necessary to this struct in order to complete the assignment!
  */
-template <typename T>
-struct ListNode {
+template <typename T> struct ListNode {
     /** @brief The value stored inside this node. */
     T value;
 
@@ -50,8 +49,7 @@ struct ListNode {
  * @param values The values to store in the list.
  * @return A `unique_ptr` to the head of the list.
  */
-template <typename T>
-unique_ptr<ListNode<T>> create_list(const std::vector<T> &values) {
+template <typename T> unique_ptr<ListNode<T>> create_list(const std::vector<T> &values) {
     /* STUDENT TODO: Implement this method */
     unique_ptr<ListNode<T>> head = nullptr;
 
@@ -72,9 +70,9 @@ unique_ptr<ListNode<T>> create_list(const std::vector<T> &values) {
  * @param head The head of the linked list.
  * @paragraph func The function to apply to each element.
  */
-template <typename T, typename Func>
-void map_list(const unique_ptr<ListNode<T>> &head, const Func &func) {
-    if (!head) return;
+template <typename T, typename Func> void map_list(const unique_ptr<ListNode<T>> &head, const Func &func) {
+    if (!head)
+        return;
     func(head->value);
     map_list(head->next, func);
 }
