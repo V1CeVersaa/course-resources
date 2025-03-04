@@ -18,31 +18,31 @@
  *
  * @note No modifications are necessary to this struct in order to complete the assignment!
  */
-template <typename T> struct ListNode {
+template <typename T>
+struct ListNode {
+    /** @brief The value stored inside this node. */
+    T value;
 
-  /** @brief The value stored inside this node. */
-  T value;
+    /** @brief The smart pointer to the next node. May be null. */
+    unique_ptr<ListNode<T>> next;
 
-  /** @brief The smart pointer to the next node. May be null. */
-  unique_ptr<ListNode<T>> next;
-
-  /**
-   * @brief Constructs a single element linked list, setting `next` to `nullptr`.
-   * @param value The value to store in the node.
-   */
-  ListNode(T value) : value(value), next(nullptr) {
-    /* This line is just here for logging purposes so we can see when the
-     * constructor runs!
+    /**
+     * @brief Constructs a single element linked list, setting `next` to `nullptr`.
+     * @param value The value to store in the node.
      */
-    std::cout << "Constructing node with value '" << value << "'\n";
-  }
+    ListNode(T value) : value(value), next(nullptr) {
+        /* This line is just here for logging purposes so we can see when the
+         * constructor runs!
+         */
+        std::cout << "Constructing node with value '" << value << "'\n";
+    }
 
-  ~ListNode() {
-    /* This line is just here for logging purposes so we can see when the
-     * destructor runs!
-     */
-    std::cout << "Destructing node with value '" << value << "'\n";
-  }
+    ~ListNode() {
+        /* This line is just here for logging purposes so we can see when the
+         * destructor runs!
+         */
+        std::cout << "Destructing node with value '" << value << "'\n";
+    }
 };
 
 /**
@@ -50,11 +50,12 @@ template <typename T> struct ListNode {
  * @param values The values to store in the list.
  * @return A `unique_ptr` to the head of the list.
  */
-template <typename T> unique_ptr<ListNode<T>> create_list(const std::vector<T>& values) {
-    unique_ptr<ListNode<T>> head {nullptr};
-    
+template <typename T>
+unique_ptr<ListNode<T>> create_list(const std::vector<T> &values) {
+    unique_ptr<ListNode<T>> head{nullptr};
+
     for (auto it = values.rbegin(); it != values.rend(); ++it) {
-        unique_ptr<ListNode<T>> newNode { make_unique<ListNode<T>>(*it) };
+        unique_ptr<ListNode<T>> newNode{::make_unique<ListNode<T>>(*it)};
         newNode->next = std::move(head);
         head = std::move(newNode);
     }
@@ -70,20 +71,19 @@ template <typename T> unique_ptr<ListNode<T>> create_list(const std::vector<T>& 
  * @paragraph func The function to apply to each element.
  */
 template <typename T, typename Func>
-void map_list(const unique_ptr<ListNode<T>>& head, const Func& func) {
-  if (!head)
-    return;
-  func(head->value);
-  map_list(head->next, func);
+void map_list(const unique_ptr<ListNode<T>> &head, const Func &func) {
+    if (!head) return;
+    func(head->value);
+    map_list(head->next, func);
 }
 
 /**
  * @brief An example of using a singly-linked list with `unique_ptr`.
  */
 void linked_list_example() {
-  std::vector<std::string> names{"Jacob", "Fabio", "Keith", "Chris", "Sean"};
-  auto head = create_list(names);
-  map_list(head, [](const std::string& name) { std::cout << name << "\n"; });
+    std::vector<std::string> names{"Jacob", "Fabio", "Keith", "Chris", "Sean"};
+    auto head = create_list(names);
+    map_list(head, [](const std::string &name) { std::cout << name << "\n"; });
 }
 
 #include "autograder/utils.hpp"

@@ -154,6 +154,7 @@ def svm_loss_naive(
     loss = 0.0
     for i in range(num_train):
         scores = W.t().mv(X[i])
+        print(scores.shape)
         correct_class_score = scores[y[i]]
         for j in range(num_classes):
             if j == y[i]:
