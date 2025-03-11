@@ -154,7 +154,6 @@ def svm_loss_naive(
     loss = 0.0
     for i in range(num_train):
         scores = W.t().mv(X[i])
-        print(scores.shape)
         correct_class_score = scores[y[i]]
         for j in range(num_classes):
             if j == y[i]:
@@ -565,7 +564,7 @@ def softmax_loss_vectorized(
     scores -= scores_max    # ensure the stability of exp(scores), Tensor with shape (N, C)
 
     exp_scores = torch.exp(scores)   # with shape (N, C)
-    exp_scores_sum = exp_scores.sum(dim=1)   # with shape (N,)
+    exp_scores_sum = exp_scores.sum(dim=1, keepdim=True)   # with shape (N, 1)
     correct_class_scores = scores[range(num_train), y]   # with shape (N,)
     loss = torch.sum(-correct_class_scores + torch.log(exp_scores_sum))
     loss /= num_train
