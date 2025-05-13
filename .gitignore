@@ -6,3 +6,8 @@ __pycache__
 *.mdc
 build
 .cache
+
+
+Booklist/*.pdf
+UCB-CS61A
+

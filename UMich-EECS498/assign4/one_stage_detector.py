@@ -61,6 +61,31 @@ class FCOSPredictionNetwork(nn.Module):
         stem_box = []
         # Replace "pass" statement with your code
         pass
+        # 构建两个相同的stem网络，一个用于分类，一个用于边界框回归和中心度
+        current_channels = in_channels
+        for out_channels in stem_channels:
+            # 为分类stem添加卷积和ReLU层
+            conv_cls = nn.Conv2d(
+                current_channels, out_channels, kernel_size=3, padding=1, stride=1
+            )
+            # 初始化卷积权重和偏置
+            torch.nn.init.normal_(conv_cls.weight, mean=0, std=0.01)
+            torch.nn.init.constant_(conv_cls.bias, 0)
+            stem_cls.append(conv_cls)
+            stem_cls.append(nn.ReLU())
+            
+            # 为边界框stem添加卷积和ReLU层
+            conv_box = nn.Conv2d(
+                current_channels, out_channels, kernel_size=3, padding=1, stride=1
+            )
+            # 初始化卷积权重和偏置
+            torch.nn.init.normal_(conv_box.weight, mean=0, std=0.01)
+            torch.nn.init.constant_(conv_box.bias, 0)
+            stem_box.append(conv_box)
+            stem_box.append(nn.ReLU())
+            
+            # 更新通道数用于下一层
+            current_channels = out_channels
 
         # Wrap the layers defined by student into a `nn.Sequential` module:
         self.stem_cls = nn.Sequential(*stem_cls)
@@ -89,6 +114,28 @@ class FCOSPredictionNetwork(nn.Module):
 
         # Replace "pass" statement with your code
         pass
+
+        # Replace these lines with your code, keep variable names unchanged.
+        # 创建类别预测卷积层
+        self.pred_cls = nn.Conv2d(
+            stem_channels[-1], num_classes, kernel_size=3, padding=1
+        )
+        torch.nn.init.normal_(self.pred_cls.weight, mean=0, std=0.01)
+        torch.nn.init.constant_(self.pred_cls.bias, 0)
+        
+        # 创建边界框回归卷积层 (4输出: 左、上、右、下)
+        self.pred_box = nn.Conv2d(
+            stem_channels[-1], 4, kernel_size=3, padding=1
+        )
+        torch.nn.init.normal_(self.pred_box.weight, mean=0, std=0.01)
+        torch.nn.init.constant_(self.pred_box.bias, 0)
+        
+        # 创建中心度预测卷积层 (1输出)
+        self.pred_ctr = nn.Conv2d(
+            stem_channels[-1], 1, kernel_size=3, padding=1
+        )
+        torch.nn.init.normal_(self.pred_ctr.weight, mean=0, std=0.01)
+        torch.nn.init.constant_(self.pred_ctr.bias, 0)
         ######################################################################
         #                           END OF YOUR CODE                         #
         ######################################################################
