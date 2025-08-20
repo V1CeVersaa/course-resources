@@ -1,7 +1,5 @@
-import torch
-
 # Type hints.
-from typing import List, Tuple
+import torch
 from torch import Tensor
 
 
@@ -10,7 +8,7 @@ def hello():
     This is a sample function that we will try to import and run to ensure that
     our environment is correctly set up on Google Colab.
     """
-    print('Hello from pytorch101.py!')
+    print("Hello from pytorch101.py!")
 
 
 def create_sample_tensor() -> Tensor:
@@ -36,9 +34,7 @@ def create_sample_tensor() -> Tensor:
     return x
 
 
-def mutate_tensor(
-    x: Tensor, indices: List[Tuple[int, int]], values: List[float]
-) -> Tensor:
+def mutate_tensor(x: Tensor, indices: list[tuple[int, int]], values: list[float]) -> Tensor:
     """
     Mutate the tensor x according to indices and values. Specifically, indices
     is a list [(i0, j0), (i1, j1), ... ] of integer indices, and values is a
@@ -157,7 +153,7 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
     return x
 
 
-def slice_indexing_practice(x: Tensor) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
+def slice_indexing_practice(x: Tensor) -> tuple[Tensor, Tensor, Tensor, Tensor]:
     """
     Given a two-dimensional tensor x, extract and return several subtensors to
     practice with slice indexing. Each tensor should be created using a single
@@ -341,7 +337,7 @@ def take_one_elem_per_col(x: Tensor) -> Tensor:
     return y
 
 
-def make_one_hot(x: List[int]) -> Tensor:
+def make_one_hot(x: list[int]) -> Tensor:
     """
     Construct a tensor of one-hot-vectors from a list of Python integers.
 
@@ -372,7 +368,7 @@ def make_one_hot(x: List[int]) -> Tensor:
     return y
 
 
-def sum_positive_entries(x: Tensor) -> Tensor:
+def sum_positive_entries(x: Tensor) -> int:
     """
     Return the sum of all the positive values in the input tensor x.
 
@@ -397,12 +393,12 @@ def sum_positive_entries(x: Tensor) -> Tensor:
     Returns:
         pos_sum: Python integer giving the sum of all positive values in x
     """
-    pos_sum = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pos_sum: int = x[x > 0].sum()
+    pos_sum = x[x > 0].sum().item()
+    pos_sum = int(pos_sum)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -486,9 +482,7 @@ def zero_row_min(x: Tensor) -> Tensor:
     return y
 
 
-def batched_matrix_multiply(
-    x: Tensor, y: Tensor, use_loop: bool = True
-) -> Tensor:
+def batched_matrix_multiply(x: Tensor, y: Tensor, use_loop: bool = True) -> Tensor:
     """
     Perform batched matrix multiplication between the tensor x of shape
     (B, N, M) and the tensor y of shape (B, M, P).
@@ -660,7 +654,7 @@ def mm_on_gpu(x: Tensor, w: Tensor) -> Tensor:
     return y_gpu
 
 
-def challenge_mean_tensors(xs: List[Tensor], ls: Tensor) -> Tensor:
+def challenge_mean_tensors(xs: list[Tensor], ls: Tensor) -> Tensor:
     """
     Compute mean of each tensor in a given list of tensors.
 
@@ -673,7 +667,7 @@ def challenge_mean_tensors(xs: List[Tensor], ls: Tensor) -> Tensor:
     comprehensions).
 
     Args:
-        xs: List of N 1-dimensional tensors.
+        xs: list of N 1-dimensional tensors.
         ls: Length of tensors in `xs`. An int64 Tensor of same length as `xs`
             with `ls[i]` giving the length of `xs[i]`.
 
@@ -694,7 +688,7 @@ def challenge_mean_tensors(xs: List[Tensor], ls: Tensor) -> Tensor:
     return y
 
 
-def challenge_get_uniques(x: torch.Tensor) -> Tuple[Tensor, Tensor]:
+def challenge_get_uniques(x: torch.Tensor) -> tuple[Tensor, Tensor]:
     """
     Get unique values and first occurrence from an input tensor.
 
@@ -705,7 +699,7 @@ def challenge_get_uniques(x: torch.Tensor) -> Tuple[Tensor, Tensor]:
     2. indices: int64 Tensor of shape (K, ) - giving indices of the first
        occurring unique values.
 
-    Concretely, this should hold True: x[indices[i]] = uniques[i] 
+    Concretely, this should hold True: x[indices[i]] = uniques[i]
 
     Your implementation should not use any explicit Python loops (including
     comprehensions), and should not require more than O(N) memory. Creating

@@ -95,9 +95,7 @@ def make_a6_submission(assignment_path, uniquename=None, umid=None):
     _make_submission(assignment_path, _A6_FILES, "A6", uniquename, umid)
 
 
-def _make_submission(
-    assignment_path, file_list, assignment_no, uniquename=None, umid=None
-):
+def _make_submission(assignment_path, file_list, assignment_no, uniquename=None, umid=None):
     if uniquename is None or umid is None:
         uniquename, umid = _get_user_info()
     zip_path = "{}_{}_{}.zip".format(uniquename, umid, assignment_no)

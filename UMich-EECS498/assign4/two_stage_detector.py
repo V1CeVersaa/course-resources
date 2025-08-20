@@ -60,8 +60,6 @@ class RPNPredictionNetwork(nn.Module):
         # Fill this list. It is okay to use your implementation from
         # `FCOSPredictionNetwork` for this code block.
         stem_rpn = []
-        # Replace "pass" statement with your code
-        pass
 
         # Wrap the layers defined by student into a `nn.Sequential` module:
         self.stem_rpn = nn.Sequential(*stem_rpn)
@@ -341,9 +339,7 @@ def rcnn_apply_deltas_to_anchors(
 
 
 @torch.no_grad()
-def sample_rpn_training(
-    gt_boxes: torch.Tensor, num_samples: int, fg_fraction: float
-):
+def sample_rpn_training(gt_boxes: torch.Tensor, num_samples: int, fg_fraction: float):
     """
     Return `num_samples` (or fewer, if not enough found) random pairs of anchors
     and GT boxes without exceeding `fg_fraction * num_samples` positives, and
@@ -405,7 +401,6 @@ def mix_gt_with_proposals(
     # Mix ground-truth boxes for every example, per FPN level. There's no direct
     # way to vectorize this.
     for _idx, _gtb in enumerate(gt_boxes):
-
         # Filter empty GT boxes:
         _gtb = _gtb[_gtb[:, 4] != -1]
         if len(_gtb) == 0:
@@ -623,7 +618,6 @@ class RPN(nn.Module):
             level_name: None for level_name, _ in anchors_per_fpn_level.items()
         }
         for level_name in anchors_per_fpn_level.keys():
-
             # Get anchor boxes and predictions from a single level.
             level_anchors = anchors_per_fpn_level[level_name]
 
@@ -750,9 +744,7 @@ class FasterRCNN(nn.Module):
         """
 
         feats_per_fpn_level = self.backbone(images)
-        output_dict = self.rpn(
-            feats_per_fpn_level, self.backbone.fpn_strides, gt_boxes
-        )
+        output_dict = self.rpn(feats_per_fpn_level, self.backbone.fpn_strides, gt_boxes)
         proposals_per_fpn_level = output_dict["proposals"]
 
         # Mix GT boxes with proposals. This is necessary to stabilize training

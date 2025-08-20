@@ -1,10 +1,11 @@
+import random
+
+import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
 import torchvision
-import cv2
-import matplotlib.pyplot as plt
-import random
 
 colormap = []
 colormap.append(([105, 0, 31], -1.0))
@@ -140,14 +141,9 @@ def colormap_to_weight(colormap, color):
     closest_dist = 99999999
 
     for colormap_value, weight in colormap:
-        dists = (
-            (colormap_value[0] - color[0]) ** 2
-            + (colormap_value[1] - color[1]) ** 2
-            + (colormap_value[2] - color[2]) ** 2
-        )
+        dists = (colormap_value[0] - color[0]) ** 2 + (colormap_value[1] - color[1]) ** 2 + (colormap_value[2] - color[2]) ** 2
 
         if dists <= closest_dist:
-
             closest_dist = dists
             closest_weight = weight
 
@@ -158,9 +154,7 @@ def get_w1(img_path):
     templates = []
     neural_net = cv2.imread(img_path)
     neural_net = cv2.cvtColor(neural_net, cv2.COLOR_BGR2RGB)
-    neural_net = cv2.resize(
-        neural_net, (900, 800), interpolation=cv2.INTER_AREA
-    )
+    neural_net = cv2.resize(neural_net, (900, 800), interpolation=cv2.INTER_AREA)
     X_tl = [150] * 7
     Y_tl = [150 + 75 * i for i in range(7)]
     for x, y in zip(X_tl, Y_tl):
@@ -179,9 +173,7 @@ def get_w1(img_path):
 def get_w2(img_path):
     neural_net = cv2.imread(img_path)
     neural_net = cv2.cvtColor(neural_net, cv2.COLOR_BGR2RGB)
-    neural_net = cv2.resize(
-        neural_net, (900, 800), interpolation=cv2.INTER_AREA
-    )
+    neural_net = cv2.resize(neural_net, (900, 800), interpolation=cv2.INTER_AREA)
     w2 = neural_net[165 : 10 * 32 + 165 : 32, 405 : 7 * 32 + 405 : 32, :]
     w2_one_channel = np.zeros((w2.shape[0], w2.shape[1]))
     for w in range(w2.shape[0]):
@@ -206,7 +198,6 @@ def colormap_to_weights(x):
     x_one_channel = np.zeros((x.shape[0], x.shape[1]))
     for w in range(x.shape[0]):
         for h in range(x.shape[1]):
-
             if x[w, h, 0] < x[w, h, 2]:
                 x_one_channel[w, h] = np.absolute(x[w, h, 1] - 246) + 246
             else:
@@ -230,9 +221,7 @@ def evaluate_MNIST(w1, w2):
         ]
     )
 
-    MNIST_test_set = torchvision.datasets.MNIST(
-        "mnist_dataset/", train=False, download=True, transform=transform
-    )
+    MNIST_test_set = torchvision.datasets.MNIST("mnist_dataset/", train=False, download=True, transform=transform)
 
     test_loader = torch.utils.data.DataLoader(MNIST_test_set, 64, shuffle=True)
 
@@ -271,7 +260,6 @@ def evaluate_MNIST(w1, w2):
 
 
 def visualize_MNIST():
-
     transform = torchvision.transforms.Compose(
         [
             torchvision.transforms.ToTensor(),
@@ -279,27 +267,19 @@ def visualize_MNIST():
         ]
     )
 
-    MNIST_train_set = torchvision.datasets.MNIST(
-        "mnist_dataset/", train=True, download=True, transform=transform
-    )
+    MNIST_train_set = torchvision.datasets.MNIST("mnist_dataset/", train=True, download=True, transform=transform)
 
     num_row = 5
     num_col = 7
-    fig, axes = plt.subplots(
-        num_row, num_col, figsize=(1.5 * num_col, 2 * num_row)
-    )
+    fig, axes = plt.subplots(num_row, num_col, figsize=(1.5 * num_col, 2 * num_row))
 
     for i in range(num_row * num_col):
         random_index = random.randint(0, 10000)
         ax = axes[i // num_col, i % num_col]
         ax.get_yaxis().set_visible(False)
         ax.get_xaxis().set_visible(False)
-        ax.imshow(
-            MNIST_train_set[random_index][0].numpy()[0, :, :], cmap="gray"
-        )
-        ax.set_title(
-            "Label: {}".format(MNIST_train_set[random_index][1])
-        )
+        ax.imshow(MNIST_train_set[random_index][0].numpy()[0, :, :], cmap="gray")
+        ax.set_title("Label: {}".format(MNIST_train_set[random_index][1]))
 
     plt.tight_layout()
     plt.show()

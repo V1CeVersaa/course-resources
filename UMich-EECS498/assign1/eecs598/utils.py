@@ -1,6 +1,7 @@
 """
 General utilities to help with implementation
 """
+
 import random
 
 import matplotlib.pyplot as plt
@@ -55,11 +56,9 @@ def visualize_dataset(X_data, y_data, samples_per_class, class_list):
     img_half_width = X_data.shape[2] // 2
     samples = []
     for y, cls in enumerate(class_list):
-        plt.text(
-            -4, (img_half_width * 2 + 2) * y + (img_half_width + 2), cls, ha="right"
-        )
+        plt.text(-4, (img_half_width * 2 + 2) * y + (img_half_width + 2), cls, ha="right")
         idxs = (y_data == y).nonzero().view(-1)
-        for i in range(samples_per_class):
+        for _ in range(samples_per_class):
             idx = idxs[random.randrange(idxs.shape[0])].item()
             samples.append(X_data[idx])
 
