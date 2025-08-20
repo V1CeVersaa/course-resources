@@ -1,13 +1,30 @@
-.idea
+# IDE and editor
+.idea/
+.vscode/
+.cursor/
+
+# System files
 .DS_Store
-__pycache__
-.vscode
-.cursor
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+*.egg
+.pytest_cache/
+.coverage
+.tox/
+venv/
+env/
+.env
+
 *.mdc
-build
-.cache
-
-
+build/
+.cache/
 Booklist/*.pdf
-UCB-CS61A
-
+Booklist/Translated/*.pdf
+UCB-CS61A/

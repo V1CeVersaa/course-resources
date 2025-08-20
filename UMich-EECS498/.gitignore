@@ -1,1 +1,5 @@
 Slides
+*.sol
+
+# __pycache__
+__pycache__/**

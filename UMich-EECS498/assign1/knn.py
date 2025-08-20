@@ -1,8 +1,8 @@
 """
 Implements a K-Nearest Neighbor classifier in PyTorch.
 """
+
 import torch
-from typing import Dict, List
 
 
 def hello():
@@ -232,7 +232,6 @@ def predict_labels(dists: torch.Tensor, y_train: torch.Tensor, k: int = 1):
 
 
 class KnnClassifier:
-
     def __init__(self, x_train: torch.Tensor, y_train: torch.Tensor):
         """
         Create a new K-Nearest Neighbor classifier with the specified training
@@ -278,13 +277,7 @@ class KnnClassifier:
         ######################################################################
         return y_test_pred
 
-    def check_accuracy(
-        self,
-        x_test: torch.Tensor,
-        y_test: torch.Tensor,
-        k: int = 1,
-        quiet: bool = False
-    ):
+    def check_accuracy(self, x_test: torch.Tensor, y_test: torch.Tensor, k: int = 1, quiet: bool = False):
         """
         Utility method for checking the accuracy of this classifier on test
         data. Returns the accuracy of the classifier on the test data, and
@@ -304,10 +297,7 @@ class KnnClassifier:
         num_samples = x_test.shape[0]
         num_correct = (y_test == y_test_pred).sum().item()
         accuracy = 100.0 * num_correct / num_samples
-        msg = (
-            f"Got {num_correct} / {num_samples} correct; "
-            f"accuracy is {accuracy:.2f}%"
-        )
+        msg = f"Got {num_correct} / {num_samples} correct; accuracy is {accuracy:.2f}%"
         if not quiet:
             print(msg)
         return accuracy
@@ -317,7 +307,7 @@ def knn_cross_validate(
     x_train: torch.Tensor,
     y_train: torch.Tensor,
     num_folds: int = 5,
-    k_choices: List[int] = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100],
+    k_choices: list[int] = [1, 3, 5, 8, 10, 12, 15, 20, 50, 100],
 ):
     """
     Perform cross-validation for `KnnClassifier`.
@@ -327,10 +317,10 @@ def knn_cross_validate(
         y_train: int64 Tensor of shape (num_train,) giving labels for training
             data.
         num_folds: Integer giving the number of folds to use.
-        k_choices: List of integers giving the values of k to try.
+        k_choices: list of integers giving the values of k to try.
 
     Returns:
-        k_to_accuracies: Dictionary mapping values of k to lists, where
+        k_to_accuracies: dictionary mapping values of k to lists, where
             k_to_accuracies[k][i] is the accuracy on the i-th fold of a
             `KnnClassifier` that uses k nearest neighbors.
     """
@@ -384,14 +374,14 @@ def knn_cross_validate(
     return k_to_accuracies
 
 
-def knn_get_best_k(k_to_accuracies: Dict[int, List]):
+def knn_get_best_k(k_to_accuracies: dict[int, list]):
     """
     Select the best value for k, from the cross-validation result from
     knn_cross_validate. If there are multiple k's available, then you SHOULD
     choose the smallest k among all possible answer.
 
     Args:
-        k_to_accuracies: Dictionary mapping values of k to lists, where
+        k_to_accuracies: dictionary mapping values of k to lists, where
             k_to_accuracies[k][i] is the accuracy on the i-th fold of a
             `KnnClassifier` that uses k nearest neighbors.
 
