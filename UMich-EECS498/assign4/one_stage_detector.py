@@ -1,16 +1,13 @@
 import math
-from typing import Dict, List, Optional
 
 import torch
 from a4_helper import *
-from common import DetectorBackboneWithFPN, class_spec_nms, get_fpn_location_coords
+from common import class_spec_nms
 from torch import nn
-from torch.nn import functional as F
 from torch.utils.data._utils.collate import default_collate
-from torchvision.ops import sigmoid_focal_loss
 
 # Short hand type notation:
-TensorDict = Dict[str, torch.Tensor]
+TensorDict = dict[str, torch.Tensor]
 
 
 def hello_one_stage_detector():
@@ -28,9 +25,7 @@ class FCOSPredictionNetwork(nn.Module):
     We will use feature maps from FPN levels (P3, P4, P5) and exclude (P6, P7).
     """
 
-    def __init__(
-        self, num_classes: int, in_channels: int, stem_channels: List[int]
-    ):
+    def __init__(self, num_classes: int, in_channels: int, stem_channels: list[int]):
         """
         Args:
             num_classes: Number of object classes for classification.
@@ -60,31 +55,22 @@ class FCOSPredictionNetwork(nn.Module):
         stem_cls = []
         stem_box = []
         # Replace "pass" statement with your code
-        pass
-        # 构建两个相同的stem网络，一个用于分类，一个用于边界框回归和中心度
+        print("[DEBUG] in_channels: ", in_channels)
+        print("[DEBUG] stem_channels: ", stem_channels)
         current_channels = in_channels
         for out_channels in stem_channels:
-            # 为分类stem添加卷积和ReLU层
-            conv_cls = nn.Conv2d(
-                current_channels, out_channels, kernel_size=3, padding=1, stride=1
-            )
-            # 初始化卷积权重和偏置
+            conv_cls = nn.Conv2d(current_channels, out_channels, kernel_size=3, padding=1, stride=1)
             torch.nn.init.normal_(conv_cls.weight, mean=0, std=0.01)
             torch.nn.init.constant_(conv_cls.bias, 0)
             stem_cls.append(conv_cls)
             stem_cls.append(nn.ReLU())
-            
-            # 为边界框stem添加卷积和ReLU层
-            conv_box = nn.Conv2d(
-                current_channels, out_channels, kernel_size=3, padding=1, stride=1
-            )
-            # 初始化卷积权重和偏置
+
+            conv_box = nn.Conv2d(current_channels, out_channels, kernel_size=3, padding=1, stride=1)
             torch.nn.init.normal_(conv_box.weight, mean=0, std=0.01)
             torch.nn.init.constant_(conv_box.bias, 0)
             stem_box.append(conv_box)
             stem_box.append(nn.ReLU())
-            
-            # 更新通道数用于下一层
+
             current_channels = out_channels
 
         # Wrap the layers defined by student into a `nn.Sequential` module:
@@ -113,27 +99,15 @@ class FCOSPredictionNetwork(nn.Module):
         self.pred_ctr = None  # Centerness conv
 
         # Replace "pass" statement with your code
-        pass
-
-        # Replace these lines with your code, keep variable names unchanged.
-        # 创建类别预测卷积层
-        self.pred_cls = nn.Conv2d(
-            stem_channels[-1], num_classes, kernel_size=3, padding=1
-        )
+        self.pred_cls = nn.Conv2d(stem_channels[-1], num_classes, kernel_size=3, padding=1)
         torch.nn.init.normal_(self.pred_cls.weight, mean=0, std=0.01)
         torch.nn.init.constant_(self.pred_cls.bias, 0)
-        
-        # 创建边界框回归卷积层 (4输出: 左、上、右、下)
-        self.pred_box = nn.Conv2d(
-            stem_channels[-1], 4, kernel_size=3, padding=1
-        )
+
+        self.pred_box = nn.Conv2d(stem_channels[-1], 4, kernel_size=3, padding=1)
         torch.nn.init.normal_(self.pred_box.weight, mean=0, std=0.01)
         torch.nn.init.constant_(self.pred_box.bias, 0)
-        
-        # 创建中心度预测卷积层 (1输出)
-        self.pred_ctr = nn.Conv2d(
-            stem_channels[-1], 1, kernel_size=3, padding=1
-        )
+
+        self.pred_ctr = nn.Conv2d(stem_channels[-1], 1, kernel_size=3, padding=1)
         torch.nn.init.normal_(self.pred_ctr.weight, mean=0, std=0.01)
         torch.nn.init.constant_(self.pred_ctr.bias, 0)
         ######################################################################
@@ -145,7 +119,7 @@ class FCOSPredictionNetwork(nn.Module):
         # STUDENTS: You do not need to get into details of why this is needed.
         torch.nn.init.constant_(self.pred_cls.bias, -math.log(99))
 
-    def forward(self, feats_per_fpn_level: TensorDict) -> List[TensorDict]:
+    def forward(self, feats_per_fpn_level: TensorDict) -> list[TensorDict]:
         """
         Accept FPN feature maps and predict the desired outputs at every location
         (as described above). Format them such that channels are placed at the
@@ -193,7 +167,7 @@ class FCOSPredictionNetwork(nn.Module):
 @torch.no_grad()
 def fcos_match_locations_to_gt(
     locations_per_fpn_level: TensorDict,
-    strides_per_fpn_level: Dict[str, int],
+    strides_per_fpn_level: dict[str, int],
     gt_boxes: torch.Tensor,
 ) -> TensorDict:
     """
@@ -226,13 +200,10 @@ def fcos_match_locations_to_gt(
             not belong to any object.
     """
 
-    matched_gt_boxes = {
-        level_name: None for level_name in locations_per_fpn_level.keys()
-    }
+    matched_gt_boxes = {level_name: None for level_name in locations_per_fpn_level.keys()}
 
     # Do this matching individually per FPN level.
     for level_name, centers in locations_per_fpn_level.items():
-
         # Get stride for this FPN level.
         stride = strides_per_fpn_level[level_name]
 
@@ -254,14 +225,10 @@ def fcos_match_locations_to_gt(
 
         lower_bound = stride * 4 if level_name != "p3" else 0
         upper_bound = stride * 8 if level_name != "p5" else float("inf")
-        match_matrix &= (pairwise_dist > lower_bound) & (
-            pairwise_dist < upper_bound
-        )
+        match_matrix &= (pairwise_dist > lower_bound) & (pairwise_dist < upper_bound)
 
         # Match the GT box with minimum area, if there are multiple GT matches.
-        gt_areas = (gt_boxes[:, 2] - gt_boxes[:, 0]) * (
-            gt_boxes[:, 3] - gt_boxes[:, 1]
-        )
+        gt_areas = (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])
 
         # Get matches and their labels using match quality matrix.
         match_matrix = match_matrix.to(torch.float32)
@@ -280,9 +247,7 @@ def fcos_match_locations_to_gt(
     return matched_gt_boxes
 
 
-def fcos_get_deltas_from_locations(
-    locations: torch.Tensor, gt_boxes: torch.Tensor, stride: int
-) -> torch.Tensor:
+def fcos_get_deltas_from_locations(locations: torch.Tensor, gt_boxes: torch.Tensor, stride: int) -> torch.Tensor:
     """
     Compute distances from feature locations to GT box edges. These distances
     are called "deltas" - `(left, top, right, bottom)` or simply `LTRB`. The
@@ -325,9 +290,7 @@ def fcos_get_deltas_from_locations(
     return deltas
 
 
-def fcos_apply_deltas_to_locations(
-    deltas: torch.Tensor, locations: torch.Tensor, stride: int
-) -> torch.Tensor:
+def fcos_apply_deltas_to_locations(deltas: torch.Tensor, locations: torch.Tensor, stride: int) -> torch.Tensor:
     """
     Implement the inverse of `fcos_get_deltas_from_locations` here:
 
@@ -406,9 +369,7 @@ class FCOS(nn.Module):
     training and predicts boxes during inference.
     """
 
-    def __init__(
-        self, num_classes: int, fpn_channels: int, stem_channels: List[int]
-    ):
+    def __init__(self, num_classes: int, fpn_channels: int, stem_channels: list[int]):
         super().__init__()
         self.num_classes = num_classes
 
@@ -431,9 +392,9 @@ class FCOS(nn.Module):
     def forward(
         self,
         images: torch.Tensor,
-        gt_boxes: Optional[torch.Tensor] = None,
-        test_score_thresh: Optional[float] = None,
-        test_nms_thresh: Optional[float] = None,
+        gt_boxes: torch.Tensor | None = None,
+        test_score_thresh: float | None = None,
+        test_nms_thresh: float | None = None,
     ):
         """
         Args:
@@ -553,9 +514,7 @@ class FCOS(nn.Module):
         }
 
     @staticmethod
-    def _cat_across_fpn_levels(
-        dict_with_fpn_levels: Dict[str, torch.Tensor], dim: int = 1
-    ):
+    def _cat_across_fpn_levels(dict_with_fpn_levels: dict[str, torch.Tensor], dim: int = 1):
         """
         Convert a dict of tensors across FPN levels {"p3", "p4", "p5"} to a
         single tensor. Values could be anything - batches of image features,
@@ -566,10 +525,10 @@ class FCOS(nn.Module):
     def inference(
         self,
         images: torch.Tensor,
-        locations_per_fpn_level: Dict[str, torch.Tensor],
-        pred_cls_logits: Dict[str, torch.Tensor],
-        pred_boxreg_deltas: Dict[str, torch.Tensor],
-        pred_ctr_logits: Dict[str, torch.Tensor],
+        locations_per_fpn_level: dict[str, torch.Tensor],
+        pred_cls_logits: dict[str, torch.Tensor],
+        pred_boxreg_deltas: dict[str, torch.Tensor],
+        pred_ctr_logits: dict[str, torch.Tensor],
         test_score_thresh: float = 0.3,
         test_nms_thresh: float = 0.5,
     ):
@@ -600,7 +559,6 @@ class FCOS(nn.Module):
         pred_scores_all_levels = []
 
         for level_name in locations_per_fpn_level.keys():
-
             # Get locations and predictions from a single level.
             # We index predictions by `[0]` to remove batch dimension.
             level_locations = locations_per_fpn_level[level_name]
@@ -631,9 +589,7 @@ class FCOS(nn.Module):
             )
 
             # Compute geometric mean of class logits and centerness:
-            level_pred_scores = torch.sqrt(
-                level_cls_logits.sigmoid_() * level_ctr_logits.sigmoid_()
-            )
+            level_pred_scores = torch.sqrt(level_cls_logits.sigmoid_() * level_ctr_logits.sigmoid_())
             # Step 1:
             # Replace "pass" statement with your code
             pass

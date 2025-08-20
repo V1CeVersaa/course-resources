@@ -42,7 +42,7 @@ mod my_module {
                         sen.push_str("bar");
                     }
                 }
-            }
+            };
             output.push(sen);
         }
         output

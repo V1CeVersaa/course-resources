@@ -4,6 +4,7 @@ and two-stage detector implementations. You have to implement some parts here -
 walk through the notebooks and you will find instructions on *when* to implement
 *what* in this module.
 """
+
 from typing import Dict, Tuple
 
 import torch
@@ -83,8 +84,15 @@ class DetectorBackboneWithFPN(nn.Module):
         # Add THREE lateral 1x1 conv and THREE output 3x3 conv layers.
         self.fpn_params = nn.ModuleDict()
 
-        # Replace "pass" statement with your code
-        pass
+        for level, shape in dummy_out_shapes:
+            lateral = nn.Conv2d(
+                shape[1], self.out_channels, kernel_size=1, stride=1, padding=0
+            )
+            output = nn.Conv2d(
+                self.out_channels, self.out_channels, kernel_size=3, stride=1, padding=1
+            )
+            self.fpn_params[level + "_lateral"] = lateral
+            self.fpn_params[level + "_output"] = output
         ######################################################################
         #                            END OF YOUR CODE                        #
         ######################################################################
@@ -99,7 +107,6 @@ class DetectorBackboneWithFPN(nn.Module):
         return {"p3": 8, "p4": 16, "p5": 32}
 
     def forward(self, images: torch.Tensor):
-
         # Multi-scale features, dictionary with keys: {"c3", "c4", "c5"}.
         backbone_feats = self.backbone(images)
 
@@ -109,9 +116,19 @@ class DetectorBackboneWithFPN(nn.Module):
         # (c3, c4, c5) and FPN conv layers created above.                    #
         # HINT: Use `F.interpolate` to upsample FPN features.                #
         ######################################################################
+        c3, c4, c5 = backbone_feats["c3"], backbone_feats["c4"], backbone_feats["c5"]
 
-        # Replace "pass" statement with your code
-        pass
+        p5 = self.fpn_params["c5_output"](self.fpn_params["c5_lateral"](c5))
+        p4 = self.fpn_params["c4_output"](
+            self.fpn_params["c4_lateral"](c4)
+        ) + F.interpolate(p5, scale_factor=2, mode="nearest")
+        p3 = self.fpn_params["c3_output"](
+            self.fpn_params["c3_lateral"](c3)
+        ) + F.interpolate(p4, scale_factor=2, mode="nearest")
+
+        fpn_feats["p3"] = p3
+        fpn_feats["p4"] = p4
+        fpn_feats["p5"] = p5
         ######################################################################
         #                            END OF YOUR CODE                        #
         ######################################################################
@@ -156,8 +173,11 @@ def get_fpn_location_coords(
         ######################################################################
         # TODO: Implement logic to get location co-ordinates below.          #
         ######################################################################
-        # Replace "pass" statement with your code
-        pass
+        # use torch.meshgrid to implement
+        _, _, H, W = feat_shape
+        x = torch.arange(H, dtype=dtype, device=device) + 0.5
+        y = torch.arange(W, dtype=dtype, device=device) + 0.5
+
         ######################################################################
         #                             END OF YOUR CODE                       #
         ######################################################################

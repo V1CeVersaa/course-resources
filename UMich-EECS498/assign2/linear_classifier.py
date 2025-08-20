@@ -2,11 +2,13 @@
 Implements linear classifeirs in PyTorch.
 WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
-import torch
+
 import random
 import statistics
 from abc import abstractmethod
-from typing import Dict, List, Callable, Optional
+from typing import Callable, Dict, List, Optional
+
+import torch
 
 
 def hello_linear_classifier():
@@ -125,9 +127,7 @@ class Softmax(LinearClassifier):
 # **************************************************#
 
 
-def svm_loss_naive(
-    W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float
-):
+def svm_loss_naive(W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float):
     """
     Structured SVM loss function, naive implementation (with loops).
 
@@ -168,8 +168,8 @@ def svm_loss_naive(
                 # computing the derivative, it is simple to compute the derivative    #
                 # at the same time that the loss is being computed.                   #
                 #######################################################################
-                dW[:, j] += X[i]        # 对于不正确的类别j，梯度为X[i]
-                dW[:, y[i]] -= X[i]     # 对于正确的类别y[i]，梯度为-X[i]
+                dW[:, j] += X[i]  # 对于不正确的类别j，梯度为X[i]
+                dW[:, y[i]] -= X[i]  # 对于正确的类别y[i]，梯度为-X[i]
                 #######################################################################
                 #                       END OF YOUR CODE                              #
                 #######################################################################
@@ -195,9 +195,7 @@ def svm_loss_naive(
     return loss, dW
 
 
-def svm_loss_vectorized(
-    W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float
-):
+def svm_loss_vectorized(W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float):
     """
     Structured SVM loss function, vectorized implementation. When you implment
     the regularization over W, please DO NOT multiply the regularization term by
@@ -225,11 +223,11 @@ def svm_loss_vectorized(
     # compute the loss and the gradient
     num_train = X.shape[0]
 
-    scores = X @ W      # with shape (N, C)
-    correct_class_score = scores[range(num_train), y]   # with shape (N,)
+    scores = X @ W  # with shape (N, C)
+    correct_class_score = scores[range(num_train), y]  # with shape (N,)
     margin = scores - correct_class_score.view(-1, 1) + 1
     margin[range(num_train), y] = 0
-    margin_mask = (margin > 0)
+    margin_mask = margin > 0
     loss = margin[margin_mask].sum()
     loss /= num_train
     loss += reg * torch.sum(W * W)
@@ -252,7 +250,7 @@ def svm_loss_vectorized(
     mask_correct_y[range(num_train), y] = True
     margin[margin > 0] = 1
     margin[margin < 0] = 0
-    margin[mask_correct_y] = torch.sum(margin, axis=1)*-1
+    margin[mask_correct_y] = torch.sum(margin, axis=1) * -1
     dW = (margin.T @ X).T
     dW /= num_train
     # Add regularization to the loss.
@@ -264,9 +262,7 @@ def svm_loss_vectorized(
     return loss, dW
 
 
-def sample_batch(
-    X: torch.Tensor, y: torch.Tensor, num_train: int, batch_size: int
-):
+def sample_batch(X: torch.Tensor, y: torch.Tensor, num_train: int, batch_size: int):
     """
     Sample batch_size elements from the training data and their
     corresponding labels to use in this round of gradient descent.
@@ -327,9 +323,7 @@ def train_linear_classifier(
     if W is None:
         # lazily initialize W
         num_classes = torch.max(y) + 1
-        W = 0.000001 * torch.randn(
-            dim, num_classes, device=X.device, dtype=X.dtype
-        )
+        W = 0.000001 * torch.randn(dim, num_classes, device=X.device, dtype=X.dtype)
     else:
         num_classes = W.shape[1]
 
@@ -456,13 +450,12 @@ def test_one_param_set(
     # and don't forget to remove this line before submitting your final version
     # num_iters = 100
 
-    cls.train(data_dict['X_train'], data_dict['y_train'], lr, reg, num_iters,
-              batch_size=200, verbose=True)
-    y_train_pred = cls.predict(data_dict['X_train'])
-    train_acc = 100.0 * (data_dict['y_train'] == y_train_pred).double().mean().item()
+    cls.train(data_dict["X_train"], data_dict["y_train"], lr, reg, num_iters, batch_size=200, verbose=True)
+    y_train_pred = cls.predict(data_dict["X_train"])
+    train_acc = 100.0 * (data_dict["y_train"] == y_train_pred).double().mean().item()
 
-    y_test_pred = cls.predict(data_dict['X_val'])
-    val_acc = 100.0 * (data_dict['y_val'] == y_test_pred).double().mean().item()
+    y_test_pred = cls.predict(data_dict["X_val"])
+    val_acc = 100.0 * (data_dict["y_val"] == y_test_pred).double().mean().item()
     ############################################################################
     #                            END OF YOUR CODE                              #
     ############################################################################
@@ -475,9 +468,7 @@ def test_one_param_set(
 # **************************************************#
 
 
-def softmax_loss_naive(
-    W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float
-):
+def softmax_loss_naive(W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float):
     """
     Softmax loss function, naive implementation (with loops).  When you implment
     the regularization over W, please DO NOT multiply the regularization term by
@@ -512,7 +503,7 @@ def softmax_loss_naive(
     num_train = X.shape[0]
 
     for i in range(num_train):
-        scores = W.t().mv(X[i])     # with shape (C,)
+        scores = W.t().mv(X[i])  # with shape (C,)
         scores = scores - scores.max()
         correct_class_score = scores[y[i]]
         loss += -correct_class_score + torch.log(torch.exp(scores).sum())
@@ -534,9 +525,7 @@ def softmax_loss_naive(
     return loss, dW
 
 
-def softmax_loss_vectorized(
-    W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float
-):
+def softmax_loss_vectorized(W: torch.Tensor, X: torch.Tensor, y: torch.Tensor, reg: float):
     """
     Softmax loss function, vectorized version.  When you implment the
     regularization over W, please DO NOT multiply the regularization term by 1/2
@@ -559,13 +548,13 @@ def softmax_loss_vectorized(
 
     # the loss is computed by the following formula for each class:
     # loss = -correct_class_scores + torch.log(exp_scores_sum)
-    scores = X @ W          # with shape (N, C)
-    scores_max, _ = torch.max(scores, dim=1, keepdim=True)   # with shape (N, 1)
-    scores -= scores_max    # ensure the stability of exp(scores), Tensor with shape (N, C)
+    scores = X @ W  # with shape (N, C)
+    scores_max, _ = torch.max(scores, dim=1, keepdim=True)  # with shape (N, 1)
+    scores -= scores_max  # ensure the stability of exp(scores), Tensor with shape (N, C)
 
-    exp_scores = torch.exp(scores)   # with shape (N, C)
-    exp_scores_sum = exp_scores.sum(dim=1, keepdim=True)   # with shape (N, 1)
-    correct_class_scores = scores[range(num_train), y]   # with shape (N,)
+    exp_scores = torch.exp(scores)  # with shape (N, C)
+    exp_scores_sum = exp_scores.sum(dim=1, keepdim=True)  # with shape (N, 1)
+    correct_class_scores = scores[range(num_train), y]  # with shape (N,)
     loss = torch.sum(-correct_class_scores + torch.log(exp_scores_sum))
     loss /= num_train
     loss += reg * torch.sum(W * W)
@@ -573,7 +562,7 @@ def softmax_loss_vectorized(
     # the gradient for each row i is computed by the following formula:
     # if j == y[i], dW[i, j] = exp_scores[i, j] / exp_scores_sum[i] * X[i] - X[i]
     # else,         dW[i, j] = exp_scores[i, j] / exp_scores_sum[i] * X[i]
-    dW_one_hot = torch.zeros_like(exp_scores)   # with shape (N, C)
+    dW_one_hot = torch.zeros_like(exp_scores)  # with shape (N, C)
     dW_one_hot[range(num_train), y] = 1
     dW = X.T @ (exp_scores / exp_scores_sum - dW_one_hot) / num_train
     dW += 2 * reg * W
