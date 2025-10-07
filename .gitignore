@@ -25,6 +25,7 @@ env/
 *.mdc
 build/
 .cache/
-Booklist/*.pdf
+Booklist/Math/*.pdf
 Booklist/Translated/*.pdf
+Booklist/*.pdf
 UCB-CS61A/
