@@ -1,7 +1,0 @@
-Slides/
-Slides_1/
-*.sol
-.venv/
-
-# __pycache__
-__pycache__/**
