@@ -93,12 +93,6 @@ class FCOSPredictionNetwork(nn.Module):
         #
         ######################################################################
 
-        # Replace these lines with your code, keep variable names unchanged.
-        self.pred_cls = None  # Class prediction conv
-        self.pred_box = None  # Box regression conv
-        self.pred_ctr = None  # Centerness conv
-
-        # Replace "pass" statement with your code
         self.pred_cls = nn.Conv2d(stem_channels[-1], num_classes, kernel_size=3, padding=1)
         torch.nn.init.normal_(self.pred_cls.weight, mean=0, std=0.01)
         torch.nn.init.constant_(self.pred_cls.bias, 0)
