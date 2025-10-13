@@ -5,8 +5,6 @@ walk through the notebooks and you will find instructions on *when* to implement
 *what* in this module.
 """
 
-from typing import Dict, Tuple
-
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -85,9 +83,7 @@ class DetectorBackboneWithFPN(nn.Module):
         self.fpn_params = nn.ModuleDict()
 
         for level, shape in dummy_out_shapes:
-            lateral = nn.Conv2d(
-                shape[1], self.out_channels, kernel_size=1, stride=1, padding=0
-            )
+            lateral = nn.Conv2d(shape[1], self.out_channels, kernel_size=1, stride=1, padding=0)
             output = nn.Conv2d(
                 self.out_channels, self.out_channels, kernel_size=3, stride=1, padding=1
             )
@@ -119,12 +115,12 @@ class DetectorBackboneWithFPN(nn.Module):
         c3, c4, c5 = backbone_feats["c3"], backbone_feats["c4"], backbone_feats["c5"]
 
         p5 = self.fpn_params["c5_output"](self.fpn_params["c5_lateral"](c5))
-        p4 = self.fpn_params["c4_output"](
-            self.fpn_params["c4_lateral"](c4)
-        ) + F.interpolate(p5, scale_factor=2, mode="nearest")
-        p3 = self.fpn_params["c3_output"](
-            self.fpn_params["c3_lateral"](c3)
-        ) + F.interpolate(p4, scale_factor=2, mode="nearest")
+        p4 = self.fpn_params["c4_output"](self.fpn_params["c4_lateral"](c4)) + F.interpolate(
+            p5, scale_factor=2, mode="nearest"
+        )
+        p3 = self.fpn_params["c3_output"](self.fpn_params["c3_lateral"](c3)) + F.interpolate(
+            p4, scale_factor=2, mode="nearest"
+        )
 
         fpn_feats["p3"] = p3
         fpn_feats["p4"] = p4
@@ -137,11 +133,11 @@ class DetectorBackboneWithFPN(nn.Module):
 
 
 def get_fpn_location_coords(
-    shape_per_fpn_level: Dict[str, Tuple],
-    strides_per_fpn_level: Dict[str, int],
+    shape_per_fpn_level: dict[str, tuple],
+    strides_per_fpn_level: dict[str, int],
     dtype: torch.dtype = torch.float32,
     device: str = "cpu",
-) -> Dict[str, torch.Tensor]:
+) -> dict[str, torch.Tensor]:
     """
     Map every location in FPN feature map to a point on the image. This point
     represents the center of the receptive field of this location. We need to
@@ -163,9 +159,7 @@ def get_fpn_location_coords(
     """
 
     # Set these to `(N, 2)` Tensors giving absolute location co-ordinates.
-    location_coords = {
-        level_name: None for level_name, _ in shape_per_fpn_level.items()
-    }
+    location_coords: dict[str, torch.Tensor] = {}
 
     for level_name, feat_shape in shape_per_fpn_level.items():
         level_stride = strides_per_fpn_level[level_name]
@@ -175,8 +169,13 @@ def get_fpn_location_coords(
         ######################################################################
         # use torch.meshgrid to implement
         _, _, H, W = feat_shape
-        x = torch.arange(H, dtype=dtype, device=device) + 0.5
-        y = torch.arange(W, dtype=dtype, device=device) + 0.5
+        y_idx = torch.arange(H, dtype=dtype, device=device)
+        x_idx = torch.arange(W, dtype=dtype, device=device)
+        yy, xx = torch.meshgrid(y_idx, x_idx, indexing="ij")
+        xc = (xx + 0.5) * level_stride
+        yc = (yy + 0.5) * level_stride
+        coords = torch.stack([xc, yc], dim=-1).reshape(-1, 2)
+        location_coords[level_name] = coords
 
         ######################################################################
         #                             END OF YOUR CODE                       #
@@ -204,6 +203,7 @@ def nms(boxes: torch.Tensor, scores: torch.Tensor, iou_threshold: float = 0.5):
         return torch.zeros(0, dtype=torch.long)
 
     keep = None
+
     #############################################################################
     # TODO: Implement non-maximum suppression which iterates the following:     #
     #       1. Select the highest-scoring box among the remaining ones,         #
@@ -215,8 +215,38 @@ def nms(boxes: torch.Tensor, scores: torch.Tensor, iou_threshold: float = 0.5):
     # HINT: You can refer to the torchvision library code:                      #
     # github.com/pytorch/vision/blob/main/torchvision/csrc/ops/cpu/nms_kernel.cpp
     #############################################################################
-    # Replace "pass" statement with your code
-    pass
+    def IoU(b1, b2):
+        x1a, y1a, x2a, y2a = b1
+        x1b, y1b, x2b, y2b = b2
+
+        area_a = (x2a - x1a) * (y2a - y1a)
+        area_b = (x2b - x1b) * (y2b - y1b)
+
+        int_x = max(0, min(x2a, x2b) - max(x1a, x1b))
+        int_y = max(0, min(y2a, y2b) - max(y1a, y1b))
+        intersect = int_x * int_y
+        union = area_a + area_b - intersect
+        return intersect / union
+
+    scores, idx = scores.sort(descending=True)
+    boxes = boxes[idx]
+
+    scores_list = scores.tolist()
+    boxes_list = boxes.tolist()
+
+    keep = []
+    discard = [0 for _ in range(len(scores_list))]
+    for i in range(len(scores_list)):
+        if discard[i]:
+            continue
+        keep.append(idx[i])
+        for j in range(len(scores_list)):
+            if discard[j] or i == j:
+                continue
+            if IoU(boxes_list[i], boxes_list[j]) > iou_threshold:
+                discard[j] = 1
+
+    keep = torch.tensor(keep, dtype=torch.long)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
