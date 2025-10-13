@@ -1,5 +1,3 @@
-from typing import Optional
-
 import json
 import os
 import shutil
@@ -54,17 +52,11 @@ class VOC2007DetectionTiny(torch.utils.data.Dataset):
         # fmt: on
 
         # Make a (class to ID) and inverse (ID to class) mapping.
-        self.class_to_idx = {
-            _class: _idx for _idx, _class in enumerate(voc_classes)
-        }
-        self.idx_to_class = {
-            _idx: _class for _idx, _class in enumerate(voc_classes)
-        }
+        self.class_to_idx = {_class: _idx for _idx, _class in enumerate(voc_classes)}
+        self.idx_to_class = {_idx: _class for _idx, _class in enumerate(voc_classes)}
 
         # Load instances from JSON file:
-        self.instances = json.load(
-            open(os.path.join(dataset_dir, f"voc07_{split}.json"))
-        )
+        self.instances = json.load(open(os.path.join(dataset_dir, f"voc07_{split}.json")))
         self.dataset_dir = dataset_dir
 
         # Define a transformation function for image: Resize the shorter image
@@ -73,9 +65,7 @@ class VOC2007DetectionTiny(torch.utils.data.Dataset):
             transforms.Resize(image_size),
             transforms.CenterCrop(image_size),
             transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-            ),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
         self.image_transform = transforms.Compose(_transforms)
 
@@ -105,9 +95,7 @@ class VOC2007DetectionTiny(torch.utils.data.Dataset):
         # Extract TAR file:
         import tarfile
 
-        voc_tar = tarfile.open(
-            os.path.join(dataset_dir, "VOCtrainval_06-Nov-2007.tar")
-        )
+        voc_tar = tarfile.open(os.path.join(dataset_dir, "VOCtrainval_06-Nov-2007.tar"))
         voc_tar.extractall(dataset_dir)
         voc_tar.close()
 
@@ -159,27 +147,19 @@ class VOC2007DetectionTiny(torch.utils.data.Dataset):
             # Clamp to (0, image size).
             gt_boxes[:, 0] = torch.clamp(gt_boxes[:, 0] * new_width - _x1, min=0)
             gt_boxes[:, 1] = torch.clamp(gt_boxes[:, 1] * new_height - _y1, min=0)
-            gt_boxes[:, 2] = torch.clamp(
-                gt_boxes[:, 2] * new_width - _x1, max=self.image_size
-            )
-            gt_boxes[:, 3] = torch.clamp(
-                gt_boxes[:, 3] * new_height - _y1, max=self.image_size
-            )
+            gt_boxes[:, 2] = torch.clamp(gt_boxes[:, 2] * new_width - _x1, max=self.image_size)
+            gt_boxes[:, 3] = torch.clamp(gt_boxes[:, 3] * new_height - _y1, max=self.image_size)
 
         # Concatenate GT classes with GT boxes; shape: (N, 5)
         gt_boxes = torch.cat([gt_boxes, gt_classes], dim=1)
 
         # Center cropping may completely exclude certain boxes that were close
         # to image boundaries. Set them to -1
-        invalid = (gt_boxes[:, 0] > gt_boxes[:, 2]) | (
-            gt_boxes[:, 1] > gt_boxes[:, 3]
-        )
+        invalid = (gt_boxes[:, 0] > gt_boxes[:, 2]) | (gt_boxes[:, 1] > gt_boxes[:, 3])
         gt_boxes[invalid] = -1
 
         # Pad to max 40 boxes, that's enough for VOC.
-        gt_boxes = torch.cat(
-            [gt_boxes, torch.zeros(40 - len(gt_boxes), 5).fill_(-1.0)]
-        )
+        gt_boxes = torch.cat([gt_boxes, torch.zeros(40 - len(gt_boxes), 5).fill_(-1.0)])
         # Return image path because it is needed for evaluation.
         return image_path, image, gt_boxes
 
@@ -266,11 +246,10 @@ def inference_with_detector(
     idx_to_class,
     score_thresh: float,
     nms_thresh: float,
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
     dtype: torch.dtype = torch.float32,
-    device:str = "cpu",
+    device: str = "cpu",
 ):
-
     # ship model to GPU
     detector.to(dtype=dtype, device=device)
 
@@ -281,12 +260,8 @@ def inference_with_detector(
     # color. Without this, the images will NOT be visually understandable.
     inverse_norm = transforms.Compose(
         [
-            transforms.Normalize(
-                mean=[0.0, 0.0, 0.0], std=[1 / 0.229, 1 / 0.224, 1 / 0.225]
-            ),
-            transforms.Normalize(
-                mean=[-0.485, -0.456, -0.406], std=[1.0, 1.0, 1.0]
-            ),
+            transforms.Normalize(mean=[0.0, 0.0, 0.0], std=[1 / 0.229, 1 / 0.224, 1 / 0.225]),
+            transforms.Normalize(mean=[-0.485, -0.456, -0.406], std=[1.0, 1.0, 1.0]),
         ]
     )
 
@@ -312,6 +287,7 @@ def inference_with_detector(
                     test_score_thresh=score_thresh,
                     test_nms_thresh=nms_thresh,
                 )
+                # print(f"num_preds: {pred_boxes.shape[0]}")
 
         # Skip current iteration if no predictions were found.
         if pred_boxes.shape[0] == 0:
@@ -341,9 +317,10 @@ def inference_with_detector(
         # write results to file for evaluation (use mAP API https://github.com/Cartucho/mAP for now...)
         if output_dir is not None:
             file_name = os.path.basename(image_path).replace(".jpg", ".txt")
-            with open(os.path.join(det_dir, file_name), "w") as f_det, open(
-                os.path.join(gt_dir, file_name), "w"
-            ) as f_gt:
+            with (
+                open(os.path.join(det_dir, file_name), "w") as f_det,
+                open(os.path.join(gt_dir, file_name), "w") as f_gt,
+            ):
                 for b in gt_boxes:
                     f_gt.write(
                         f"{idx_to_class[b[4].item()]} {b[0]:.2f} {b[1]:.2f} {b[2]:.2f} {b[3]:.2f}\n"
@@ -353,9 +330,7 @@ def inference_with_detector(
                         f"{idx_to_class[b[4].item()]} {b[5]:.6f} {b[0]:.2f} {b[1]:.2f} {b[2]:.2f} {b[3]:.2f}\n"
                     )
         else:
-            eecs598.utils.detection_visualizer(
-                image, idx_to_class, gt_boxes, pred_boxes
-            )
+            eecs598.utils.detection_visualizer(image, idx_to_class, gt_boxes, pred_boxes)
 
     end_t = time.time()
-    print(f"Total inference time: {end_t-start_t:.1f}s")
+    print(f"Total inference time: {end_t - start_t:.1f}s")
