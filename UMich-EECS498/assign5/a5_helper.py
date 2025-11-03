@@ -18,7 +18,7 @@ def load_coco_captions(path: str = "./datasets/coco.pt"):
     "vocab" - caption vocabulary, including "idx_to_token" and "token_to_idx"
 
     Returns: a data dictionary
-  """
+    """
     data_dict = torch.load(path)
     # print out all the keys and values from the data dictionary
     for k, v in data_dict.items():
@@ -27,19 +27,15 @@ def load_coco_captions(path: str = "./datasets/coco.pt"):
         else:
             print(k, type(v), v.keys())
 
-    assert data_dict["train_images"].size(0) == data_dict["train_captions"].size(
-        0
-    ) and data_dict["val_images"].size(0) == data_dict["val_captions"].size(
-        0
-    ), "shapes of data mismatch!"
+    assert data_dict["train_images"].size(0) == data_dict["train_captions"].size(0) and data_dict[
+        "val_images"
+    ].size(0) == data_dict["val_captions"].size(0), "shapes of data mismatch!"
 
     print("\nTrain images shape: ", data_dict["train_images"].shape)
     print("Train caption tokens shape: ", data_dict["train_captions"].shape)
     print("Validation images shape: ", data_dict["val_images"].shape)
     print("Validation caption tokens shape: ", data_dict["val_captions"].shape)
-    print(
-        "total number of caption tokens: ", len(data_dict["vocab"]["idx_to_token"])
-    )
+    print("total number of caption tokens: ", len(data_dict["vocab"]["idx_to_token"]))
     print(
         "mappings (list) from index to caption token: ",
         data_dict["vocab"]["idx_to_token"],
@@ -76,9 +72,7 @@ def train_captioner(
     optimizer = torch.optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()), learning_rate
     )
-    lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
-        optimizer, lambda epoch: lr_decay ** epoch
-    )
+    lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: lr_decay**epoch)
 
     # sample minibatch data
     iter_per_epoch = math.ceil(image_data.shape[0] // batch_size)
@@ -163,13 +157,9 @@ def train(
 ):
     print("Training started...")
     if warmup_interval is None:
-        optimizer = torch.optim.Adam(
-            model.parameters(), lr=lr, betas=(0.9, 0.995), eps=1e-9
-        )
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr, betas=(0.9, 0.995), eps=1e-9)
     else:
-        optimizer = torch.optim.Adam(
-            model.parameters(), lr=warmup_lr, betas=(0.9, 0.995), eps=1e-9
-        )
+        optimizer = torch.optim.Adam(model.parameters(), lr=warmup_lr, betas=(0.9, 0.995), eps=1e-9)
     iteration = 0
     for epoch_num in range(num_epochs):
         epoch_loss = []
@@ -188,9 +178,7 @@ def train(
             loss = loss_func(pred, gnd)
             epoch_loss.append(loss.item())
             if warmup_interval is not None and iteration == warmup_interval:
-                print(
-                    f"End of warmup. Swapping learning rates from {warmup_lr} to {lr}"
-                )
+                print(f"End of warmup. Swapping learning rates from {warmup_lr} to {lr}")
                 for param_group in optimizer.param_groups:
                     warmup_lr = lr
                     param_group["lr"] = lr
@@ -202,7 +190,7 @@ def train(
         val_loss, val_acc = val(model, val_dataloader, loss_func, batch_size)
         loss_hist = avg_epoch_loss / (batch_size * 4)
         print(
-            f"[epoch: {epoch_num+1}]",
+            f"[epoch: {epoch_num + 1}]",
             "[loss: ",
             f"{loss_hist:.4f}",
             "]",
@@ -256,9 +244,7 @@ def inference(model, inp_exp, inp_exp_pos, out_pos_exp, out_seq_len):
         ans_emb = model.emb_layer(y_init)
         a_emb_inp = ans_emb + out_pos_exp[:, : y_init.shape[1], :]
         dec_out = model.decoder(a_emb_inp, enc_out, None)
-        _, next_word = torch.max(
-            dec_out[0, y_init.shape[1] - 1 : y_init.shape[1]], dim=1
-        )
+        _, next_word = torch.max(dec_out[0, y_init.shape[1] - 1 : y_init.shape[1]], dim=1)
 
         y_init = torch.cat([y_init, next_word.view(1, 1)], dim=1)
     return y_init, model
