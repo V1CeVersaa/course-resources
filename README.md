@@ -12,7 +12,7 @@
 - [ ] [Stanford CS236: Language Modeling from Scratch](./Stanford-CS236/index.md)
 - [ ] [UCL COMPM050: Reinforcement Learning](./UCL-COMPM050/index.md)
 - [ ] [UCB CS285: Deep Reinforcement Learning](./UCB-CS285/index.md)
-- [ ] [UMich EECS498: Deep Learning for Computer Vision](./UMich-EECS498/index.md)
+- [x] [UMich EECS498: Deep Learning for Computer Vision](./UMich-EECS498/index.md)
 - [ ] [USC CSCI699: Introduction to Online Learning](./USC-CSCI699/index.md)
 - [x] [GitHub: Rustlings](./GitHub-Rustlings/)
 - [x] [CodeCrafters: Build your own Redis](./Codecrafters-redis/README.md) 「Finished First 4 Stages」 
