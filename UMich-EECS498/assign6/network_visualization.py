@@ -15,7 +15,7 @@ def hello():
     print("Hello from network_visualization.py!")
 
 
-def compute_saliency_maps(X, y, model):
+def compute_saliency_maps(X, y, model: torch.nn.Module):
     """
     Compute a class saliency map using the model for images X and labels y.
 
@@ -30,8 +30,6 @@ def compute_saliency_maps(X, y, model):
     """
     # Make input tensor require gradient
     X.requires_grad_()
-
-    saliency = None
     ##############################################################################
     # TODO: Implement this function. Perform a forward and backward pass through #
     # the model to compute the gradient of the correct class score with respect  #
@@ -40,15 +38,19 @@ def compute_saliency_maps(X, y, model):
     # the gradients with a backward pass.                                        #
     # Hint: X.grad.data stores the gradients                                     #
     ##############################################################################
-    # Replace "pass" statement with your code
-    pass
+    scores = model(X)  # (N, num_classes), forward pass
+    correct_scores = torch.gather(scores, dim=1, index=y.view(-1, 1)).squeeze()
+    loss = correct_scores.sum()
+    model.zero_grad()
+    loss.backward()
+    saliency = X.grad.data.abs().max(dim=1)[0]
     ##############################################################################
     #               END OF YOUR CODE                                             #
     ##############################################################################
     return saliency
 
 
-def make_adversarial_attack(X, target_y, model, max_iter=100, verbose=True):
+def make_adversarial_attack(X, target_y, model: torch.nn.Module, max_iter=100, verbose=True):
     """
     Generate an adversarial attack that is close to X, but that the model classifies
     as target_y.
@@ -83,15 +85,31 @@ def make_adversarial_attack(X, target_y, model, max_iter=100, verbose=True):
     # attack in fewer than 100 iterations of gradient ascent.                    #
     # You can print your progress over iterations to check your algorithm.       #
     ##############################################################################
-    # Replace "pass" statement with your code
-    pass
+    for i in range(max_iter):
+        scores = model(X_adv)
+        preds = scores.data.max(1)[1]
+        if preds.item() == target_y:
+            if verbose:
+                print(f"Iteration {i}: model is fooled")
+            break
+        target = scores[:, target_y].sum()
+
+        model.zero_grad()
+        target.backward()
+        grad = X_adv.grad.data
+        grad_norm = grad.norm() + 1e-8
+        step = learning_rate * grad / grad_norm
+
+        with torch.no_grad():
+            X_adv.data += step
+
     ##############################################################################
     #                             END OF YOUR CODE                               #
     ##############################################################################
-    return X_adv
+    return X_adv.detach()
 
 
-def class_visualization_step(img, target_y, model, **kwargs):
+def class_visualization_step(img, target_y, model: torch.nn.Module, **kwargs):
     """
     Performs gradient step update to generate an image that maximizes the
     score of target_y under a pretrained model.
@@ -118,8 +136,22 @@ def class_visualization_step(img, target_y, model, **kwargs):
     # the generated image using gradient ascent & reset img.grad to zero   #
     # after each step.                                                     #
     ########################################################################
-    # Replace "pass" statement with your code
-    pass
+    scores = model(img)
+    target = scores[:, target_y].sum()
+
+    reg = l2_reg * (img**2).sum()
+    loss = target - reg
+
+    model.zero_grad()
+    if img.grad is not None:
+        img.grad.zero_()
+    loss.backward()
+
+    with torch.no_grad():
+        grad = img.grad.data * learning_rate
+        img.data += grad
+
+    img.grad.zero_()
     ########################################################################
     #                             END OF YOUR CODE                         #
     ########################################################################
