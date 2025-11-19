@@ -21,6 +21,7 @@ dependencies = [
     "ty>=0.0.1a16",
     "loguru>=0.7.3",
     "scalene>=1.5.55",
+    "tokenizers>=0.22.1",
 ]
 
 [build-system]

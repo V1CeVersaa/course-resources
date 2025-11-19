@@ -1,7 +1,10 @@
 import os
+import pathlib
+import time
 from collections import Counter, defaultdict
 
 from loguru import logger
+from tqdm import tqdm
 
 from .pretokenization import pretokenize
 
@@ -12,28 +15,30 @@ def train_bpe(
     special_tokens: list[str],
     **kwargs,
 ) -> tuple[dict[int, bytes], list[tuple[bytes, bytes]]]:
-    print("")
-    logger.info(f"Parameter input_path = {input_path}")
-    logger.info(f"Parameter vocab_size = {vocab_size}")
-    logger.info(f"Parameter special_tokens = {special_tokens}")
-    logger.info(f"Parameter kwargs = {kwargs}")
+    # print("")
+    # logger.info(f"Parameter input_path = {input_path}")
+    # logger.info(f"Parameter vocab_size = {vocab_size}")
+    # logger.info(f"Parameter special_tokens = {special_tokens}")
+    # logger.info(f"Parameter kwargs = {kwargs}")
 
     merges: list[tuple[bytes, bytes]] = []
     vocab: dict[int, bytes] = _get_basic_vocab(special_tokens)
-    logger.info(f"Initialized basic vocabulary with size: {len(vocab)}")
+    # logger.info(f"Initialized basic vocabulary with size: {len(vocab)}")
 
     word_counter: Counter[bytes] = pretokenize(input_path, special_tokens)
     word_symbol: defaultdict[bytes, list[bytes]] = defaultdict(list)
     for word, _ in word_counter.items():
         word_symbol[word] = [bytes([b]) for b in word]
 
-    logger.info(f"Completed pretokenization. Unique tokens found: {len(word_counter)}")
+    # logger.info(f"Completed pretokenization. Unique tokens found: {len(word_counter)}")
 
     pair_occurrences: Counter[tuple[bytes, bytes]] = _get_init_pair_occurrences(word_counter, word_symbol)
     affected_words: dict[tuple[bytes, bytes], set[bytes]] = _build_affected_words(word_symbol)  # inverted index
-    logger.info(f"Initialized pair occurrences and affected words. Unique pairs found: {len(pair_occurrences)}.")
+    # logger.info(f"Initialized pair occurrences and affected words. Unique pairs found: {len(pair_occurrences)}.")
 
-    while len(vocab) < vocab_size:  # stop when the vocabulary size is reached
+    iter_times = vocab_size - len(vocab)
+    for _ in tqdm(range(iter_times), desc="Finding byte pairs to merge"):
+        # while len(vocab) < vocab_size:  # stop when the vocabulary size is reached
         if not pair_occurrences:
             logger.warning("No more available pairs. Stop early.")
             break
@@ -46,7 +51,7 @@ def train_bpe(
 
         _update_pair_occurrences(word_counter, word_symbol, pair_occurrences, affected_words, merge_pair)
 
-    logger.info(f"Completed BPE training. Vocabulary size: {len(vocab)}")
+    # logger.info(f"Completed BPE training. Vocabulary size: {len(vocab)}")
 
     return vocab, merges
 
@@ -67,7 +72,7 @@ def _get_init_pair_occurrences(
 ) -> Counter[tuple[bytes, bytes]]:
     pair_occurrences: Counter[tuple[bytes, bytes]] = Counter()
 
-    for word, _ in word_counter.items():
+    for word, _ in tqdm(word_counter.items(), desc="Initializing pair occurrences"):
         for i in range(len(word_symbol[word]) - 1):
             pair = (word_symbol[word][i], word_symbol[word][i + 1])
             pair_occurrences[pair] += word_counter[word]
@@ -77,7 +82,7 @@ def _get_init_pair_occurrences(
 
 def _build_affected_words(word_symbol: defaultdict[bytes, list[bytes]]) -> dict[tuple[bytes, bytes], set[bytes]]:
     aw: dict[tuple[bytes, bytes], set[bytes]] = defaultdict(set)
-    for w, syms in word_symbol.items():
+    for w, syms in tqdm(word_symbol.items(), desc="Building affected words index"):
         for i in range(len(syms) - 1):
             aw[(syms[i], syms[i + 1])].add(w)
     return aw
@@ -148,3 +153,20 @@ def _update_pair_occurrences(
 
     pair_occurrences.pop(merge_pair, None)
     affected_words.pop(merge_pair, None)
+
+
+if __name__ == "__main__":
+    PROJECT_PATH = pathlib.Path(__file__).resolve().parent.parent
+    input_path = PROJECT_PATH / "data" / "TinyStoriesV2-GPT4-train.txt"
+    logger.info(f"input_path: {input_path}")
+
+    start_time = time.time()
+    vocab, merges = train_bpe(
+        input_path=input_path,
+        vocab_size=10_000,
+        special_tokens=["<|endoftext|>"],
+    )
+    end_time = time.time()
+    logger.info(f"finished training bpe on dataset TinyStoriesV2, time elapsed {end_time - start_time}")
+    logger.info(f"vocabulary info: {len(vocab)}")
+    logger.info(f"merge info: {len(merges)}")
