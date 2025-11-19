@@ -1,0 +1,14 @@
+file:
+    file_list:
+        [
+            # "../data/TinyStoriesV2-GPT4-train.txt",
+            "../data/TinyStoriesV2-GPT4-valid.txt",
+        ]
+    out_dir: "tokenizer/TinyStories-32k"
+    model_file: "model.json"
+    vocab_file: "vocab.json"
+    merge_file: "merges.txt"
+
+tokenizer:
+    vocab_size: 32000
+    special_tokens: ["<|endoftext|>"]
