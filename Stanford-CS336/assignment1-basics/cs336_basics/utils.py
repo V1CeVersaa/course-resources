@@ -1,12 +1,26 @@
 import os
 import typing
 from collections.abc import Iterable
+from pathlib import Path
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 import torch
 from jaxtyping import Float, Int
 from torch.types import Tensor
+
+
+class Dataset:
+    def __init__(self, dataset: str, batch_size: int, context_length: int, device: str):
+        self.batch_size = batch_size
+        self.context_length = context_length
+        self.device = device
+        self.train_data = np.memmap(Path(dataset.replace("t-v", "train")), dtype=np.uint16, mode="r").astype(np.uint64)
+        self.valid_data = np.memmap(Path(dataset.replace("t-v", "valid")), dtype=np.uint16, mode="r").astype(np.uint64)
+
+    def get_batch(self, split: str) -> tuple[torch.Tensor, torch.Tensor]:
+        data = self.train_data if split == "train" else self.valid_data
+        return get_batch(data, self.batch_size, self.context_length, self.device)
 
 
 def softmax(in_features: Tensor, dim: int = -1):
@@ -47,9 +61,9 @@ def get_batch(
     dataset: npt.NDArray, batch_size: int, context_length: int, device: str
 ) -> tuple[torch.Tensor, torch.Tensor]:
     max_start_idx = len(dataset) - context_length
-    start_indices = numpy.random.randint(0, max_start_idx, size=batch_size)
+    start_indices = np.random.randint(0, max_start_idx, size=batch_size)
 
-    indices = start_indices[:, None] + numpy.arange(context_length)[None, :]
+    indices = start_indices[:, None] + np.arange(context_length)[None, :]
     x = dataset[indices]
     y = dataset[indices + 1]
 
@@ -61,24 +75,26 @@ def get_batch(
 
 def save_checkpoint(
     model: torch.nn.Module,
-    optimizer: torch.optim.Optimizer,
+    optimizer: torch.optim.Optimizer | None,
     iteration: int,
     out: str | os.PathLike | typing.BinaryIO | typing.IO[bytes],
 ):
     checkpoint = {
         "iteration": iteration,
         "model_state_dict": model.state_dict(),
-        "optimizer_state_dict": optimizer.state_dict(),
     }
+    if optimizer is not None:
+        checkpoint["optimizer_state_dict"] = optimizer.state_dict()
     torch.save(checkpoint, out)
 
 
 def load_checkpoint(
     src: str | os.PathLike | typing.BinaryIO | typing.IO[bytes],
     model: torch.nn.Module,
-    optimizer: torch.optim.Optimizer,
+    optimizer: torch.optim.Optimizer | None = None,
 ) -> int:
     checkpoint = torch.load(src)
     model.load_state_dict(checkpoint["model_state_dict"])
-    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
     return checkpoint["iteration"]
