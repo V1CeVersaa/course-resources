@@ -1,0 +1,27 @@
+dataset:
+    dataset: "../data/TinyStoriesV2-GPT4-t-v.bin"
+    context_length: 256
+    batch_size: 64
+
+model:
+    vocab_size: 10000
+    context_length: 256
+    num_layers: 6
+    d_model: 512
+    num_heads: 8
+    d_ff: 2048
+    rope_theta: 10000.0
+
+optimizer:
+    total_iters: 5001
+    warmup_iters: 500
+    lr_max: 0.0005
+    lr_min: 0.00001
+    weight_decay: 0.01
+
+checklog:
+    check_dir: "../checkpoints" # relative to root/scripts
+    save_interval: 500
+    log_interval: 50
+    eval_interval: 500
+    eval_iters: 200

@@ -1,0 +1,11 @@
+tokenizer:
+    in_dir: "tokenizer/TinyStories-32k"
+    vocab_file: "vocab.json"
+    merge_file: "merges.txt"
+    special_tokens: ["<|endoftext|>"]
+
+files:
+    [
+        "../data/TinyStoriesV2-GPT4-train.txt",
+        "../data/TinyStoriesV2-GPT4-valid.txt",
+    ]

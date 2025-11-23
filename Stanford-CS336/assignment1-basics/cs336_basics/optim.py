@@ -6,7 +6,9 @@ import torch.optim as optim
 
 
 class AdamW(optim.Optimizer):
-    def __init__(self, params, lr: float, weight_decay: float, betas: tuple[float, float], eps: float):
+    def __init__(
+        self, params, lr: float, weight_decay: float, betas: tuple[float, float] = (0.9, 0.999), eps: float = 1e-8
+    ):
         defaults = {
             "lr": lr,
             "betas": betas,
@@ -50,6 +52,10 @@ class AdamW(optim.Optimizer):
                 param.mul_(1 - lr * weight_decay)
 
         return loss
+
+    def set_lr(self, lr: float):
+        for group in self.param_groups:
+            group["lr"] = lr
 
 
 def get_lr_cosine_schedule(

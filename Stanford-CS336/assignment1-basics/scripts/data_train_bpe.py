@@ -7,6 +7,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from cs336_basics import train_bpe
+from cs336_basics.tokenizer import gpt2_bytes_to_unicode
 
 
 class Config(BaseModel):
@@ -38,14 +39,27 @@ def main():
     vocab_file = cfg.file.vocab_path
     merge_file = cfg.file.merge_path
 
-    vocab_serializable = {k: v.decode(errors="replace") for k, v in vocab.items()}
+    byte_to_unicode = gpt2_bytes_to_unicode()
+
+    # Convert the byte tokens in the vocab back to string tokens using the unicode mapping
+    # vocab is Dict[int, bytes]
+    reversed_vocab = {"".join([byte_to_unicode[b] for b in bytes_token]): k for k, bytes_token in vocab.items()}
+
+    # Convert the byte sequences in merges back to string tokens
+    reversed_merges = [
+        " ".join([
+            "".join([byte_to_unicode[b] for b in merge[0]]),
+            "".join([byte_to_unicode[b] for b in merge[1]]),
+        ])
+        for merge in merges
+    ]
 
     with open(vocab_file, "w", encoding="utf-8") as f:
-        json.dump(vocab_serializable, f, ensure_ascii=False, indent=2)
+        json.dump(reversed_vocab, f, ensure_ascii=False, indent=4)
 
     with open(merge_file, "w", encoding="utf-8") as f:
-        for merge in merges:
-            f.write(f"{merge}\n")
+        for merge in reversed_merges:
+            f.write(merge + "\n")
 
     logger.info("vocab and merges data saved")
 

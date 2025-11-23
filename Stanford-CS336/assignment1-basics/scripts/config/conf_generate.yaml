@@ -1,0 +1,19 @@
+model:
+    vocab_size: 10000
+    context_length: 256
+    num_layers: 6
+    d_model: 512
+    num_heads: 8
+    d_ff: 2048
+    rope_theta: 10000.0
+
+generation:
+    checkpoint_path: "../checkpoints/transformer-lm_step_5000.pt"
+    tokenizer_vocab: "tokenizer/TinyStories-32k/vocab.json"
+    tokenizer_merges: "tokenizer/TinyStories-32k/merges.txt"
+    tokenizer_specs: ["<|endoftext|>"]
+    prompt: "Once upon a time, there was a princess and a brave knight."
+    max_length: 256
+    temperature: 0.8
+    top_p: 0.9
+    seed: 42
