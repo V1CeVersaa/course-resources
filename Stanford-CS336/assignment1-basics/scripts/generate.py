@@ -110,6 +110,7 @@ def main():
     model = TransformerLM(**cfg.model.model_dump())
     model.to(device)
 
+    logger.info(f"Loading Checkpoint from {cfg.generation.checkpoint_path}")
     load_checkpoint(cfg.generation.checkpoint_path, model)
 
     tokenizer = Tokenizer.from_file(

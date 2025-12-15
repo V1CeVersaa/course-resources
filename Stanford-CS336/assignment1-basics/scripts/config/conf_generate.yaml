@@ -8,7 +8,7 @@ model:
     rope_theta: 10000.0
 
 generation:
-    checkpoint_path: "../checkpoints/transformer-lm_step_5000.pt"
+    checkpoint_path: "../checkpoints/OpenWebText/transformer-lm_step_12000.pt"
     tokenizer_vocab: "tokenizer/TinyStories-32k/vocab.json"
     tokenizer_merges: "tokenizer/TinyStories-32k/merges.txt"
     tokenizer_specs: ["<|endoftext|>"]
