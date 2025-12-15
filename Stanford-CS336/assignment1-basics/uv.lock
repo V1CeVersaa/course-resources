@@ -143,7 +143,7 @@ requires-dist = [
     { name = "einx", specifier = ">=0.3.0" },
     { name = "jaxtyping", specifier = ">=0.3.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "numpy", specifier = "<2.0" },
+    { name = "numpy" },
     { name = "psutil", specifier = ">=6.1.1" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "regex", specifier = ">=2024.11.6" },
