@@ -1,58 +1,70 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any
 
+from cs336_data.utils import (
+    classify_nsfw,
+    classify_quality,
+    classify_toxic_speech,
+    exact_line_deduplication,
+    extract_text,
+    gopher_quality_filter,
+    identify_language,
+    mask_emails,
+    mask_ips,
+    mask_phone_numbers,
+    minhash_deduplication,
+)
 
 
 def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
-    raise NotImplementedError
+    return extract_text(html_bytes)
 
 
 def run_identify_language(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    return identify_language(text)
 
 
 def run_mask_emails(text: str) -> tuple[str, int]:
-    raise NotImplementedError
+    return mask_emails(text)
 
 
 def run_mask_phone_numbers(text: str) -> tuple[str, int]:
-    raise NotImplementedError
+    return mask_phone_numbers(text)
 
 
 def run_mask_ips(text: str) -> tuple[str, int]:
-    raise NotImplementedError
+    return mask_ips(text)
 
 
 def run_classify_nsfw(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    return classify_nsfw(text)
 
 
 def run_classify_toxic_speech(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    return classify_toxic_speech(text)
 
 
 def run_classify_quality(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    return classify_quality(text)
 
 
 def run_gopher_quality_filter(text: str) -> bool:
-    raise NotImplementedError
+    return gopher_quality_filter(text)
 
 
-def run_exact_line_deduplication(
-    input_files: list[os.PathLike], output_directory: os.PathLike
-):
-    raise NotImplementedError
+def run_exact_line_deduplication(input_files: list[os.PathLike] | list[Path], output_directory: os.PathLike | Path):
+    return exact_line_deduplication(input_files, output_directory)
 
 
 def run_minhash_deduplication(
-    input_files: list[os.PathLike],
+    input_files: list[os.PathLike] | list[Path],
     num_hashes: int,
     num_bands: int,
     ngrams: int,
     jaccard_threshold: float,
     output_directory: os.PathLike,
 ):
-    raise NotImplementedError
+    return minhash_deduplication(input_files, num_hashes, num_bands, ngrams, jaccard_threshold, output_directory)
