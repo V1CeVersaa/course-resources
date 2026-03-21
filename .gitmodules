@@ -1,0 +1,3 @@
+[submodule "Stanford-CS336/slides-sp25"]
+	path = Stanford-CS336/slides-sp25
+	url = https://github.com/stanford-cs336/spring2025-lectures.git
