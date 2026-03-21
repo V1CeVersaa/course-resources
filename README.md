@@ -9,7 +9,7 @@
 - [x] [Stanford: CS106L Standard C++ Programming](./Stanford-CS106L/index.md) 
 - [ ] [Stanford CS197: Computer Science Research](./Stanford-CS197/index.md)
 - [ ] [Stanford CS224N: Natural Language Processing with Deep Learning](./Stanford-CS224N/index.md)
-- [ ] [Stanford CS236: Language Modeling from Scratch](./Stanford-CS236/index.md)
+- [ ] [Stanford CS336: Language Modeling from Scratch](./Stanford-CS336/index.md)
 - [ ] [UCL COMPM050: Reinforcement Learning](./UCL-COMPM050/index.md)
 - [ ] [UCB CS285: Deep Reinforcement Learning](./UCB-CS285/index.md)
 - [x] [UMich EECS498: Deep Learning for Computer Vision](./UMich-EECS498/index.md)

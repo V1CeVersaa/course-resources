@@ -1,5 +1,0 @@
-(library
- (public_name lab1)
- (name lab1) 
- (modules lambda fresh combinator arithmetic)
- (libraries base))
