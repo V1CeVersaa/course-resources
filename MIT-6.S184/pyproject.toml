@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 160
+extend-include = ["*.ipynb"]
+
+[tool.ruff.format]
+line-ending = "auto"
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
