@@ -4,15 +4,23 @@
 >
 > For storage reasons, some slides are not uploaded.
 
-## Table of Contents
+## Courses
 
-- [x] [Stanford: CS106L Standard C++ Programming](./Stanford-CS106L/index.md) 
-- [ ] [Stanford CS197: Computer Science Research](./Stanford-CS197/index.md)
-- [ ] [Stanford CS224N: Natural Language Processing with Deep Learning](./Stanford-CS224N/index.md)
-- [ ] [Stanford CS336: Language Modeling from Scratch](./Stanford-CS336/index.md)
-- [ ] [UCL COMPM050: Reinforcement Learning](./UCL-COMPM050/index.md)
-- [ ] [UCB CS285: Deep Reinforcement Learning](./UCB-CS285/index.md)
-- [x] [UMich EECS498: Deep Learning for Computer Vision](./UMich-EECS498/index.md)
-- [ ] [USC CSCI699: Introduction to Online Learning](./USC-CSCI699/index.md)
-- [x] [GitHub: Rustlings](./GitHub-Rustlings/)
-- [x] [CodeCrafters: Build your own Redis](./Codecrafters-redis/README.md) 「Finished First 4 Stages」 
+- [ ] [MIT 6.S184 (2025): Generative AI with Stochastic Differential Equations](./MIT-6.S184/README.md)
+- [x] [Stanford CS106L (2024): Standard C++ Programming](./Stanford-CS106L/README.md)
+- [ ] [Stanford CS197 (2025): Computer Science Research](./Stanford-CS197/README.md)
+- [ ] [Stanford CS224N (2025): Natural Language Processing with Deep Learning](./Stanford-CS224N/README.md)
+- [ ] [Stanford CS231n (2025): Deep Learning for Computer Vision](./Stanford-CS231n/README.md)
+- [ ] [Stanford CS336 (2025): Language Modeling from Scratch](./Stanford-CS336/README.md)
+- [ ] [UCB CS61A (2025): Structure and Interpretation of Computer Programs](./UCB-CS61A/README.md)
+- [ ] [UCB CS168 (2024): Introduction to the Internet](./UCB-CS168/README.md)
+- [ ] [UCB CS285 (2026): Deep Reinforcement Learning](./UCB-CS285/README.md)
+- [ ] [UCL COMPM050 (2015): Reinforcement Learning](./UCL-COMPM050/README.md)
+- [x] [UMich EECS498 (2022): Deep Learning for Computer Vision](./UMich-EECS498/README.md)
+- [ ] [USC CSCI699 (2017): Introduction to Online Learning](./USC-CSCI699/README.md)
+
+## Practice
+
+- [x] [GitHub: Rustlings](./GitHub-Rustlings/README.md)
+- [x] [CodeCrafters: Build Your Own Redis](./Codecrafters-redis/README.md) 「Finished First 4 Stages」
+- [ ] [CodeCrafters: Build Your Own Claude Code](./Codecrafters-claude-code/README.md)
