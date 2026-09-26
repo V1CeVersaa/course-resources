@@ -1,3 +1,5 @@
+# CodeCrafters: Build Your Own Claude Code
+
 [![progress-banner](https://backend.codecrafters.io/progress/claude-code/56e88b65-ef2d-4bf0-9e29-7742202db0db)](https://app.codecrafters.io/users/V1CeVersaa?r=2qF)
 
 This is a starting point for TypeScript solutions to the

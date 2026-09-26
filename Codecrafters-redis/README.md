@@ -1,3 +1,5 @@
+# CodeCrafters: Build Your Own Redis
+
 [![progress-banner](https://backend.codecrafters.io/progress/redis/5d015518-1da8-4e2f-abf0-8cdba0005f84)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
 This is a starting point for Rust solutions to the
