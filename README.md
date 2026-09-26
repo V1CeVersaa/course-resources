@@ -6,7 +6,7 @@
 
 ## Courses
 
-- [ ] [MIT 6.S184 (2025): Generative AI with Stochastic Differential Equations](./MIT-6.S184/README.md)
+- [x] [MIT 6.S184 (2025): Generative AI with Stochastic Differential Equations](./MIT-6.S184/README.md)
 - [x] [Stanford CS106L (2024): Standard C++ Programming](./Stanford-CS106L/README.md)
 - [ ] [Stanford CS197 (2025): Computer Science Research](./Stanford-CS197/README.md)
 - [ ] [Stanford CS224N (2025): Natural Language Processing with Deep Learning](./Stanford-CS224N/README.md)
@@ -23,4 +23,4 @@
 
 - [x] [GitHub: Rustlings](./GitHub-Rustlings/README.md)
 - [x] [CodeCrafters: Build Your Own Redis](./Codecrafters-redis/README.md) 「Finished First 4 Stages」
-- [ ] [CodeCrafters: Build Your Own Claude Code](./Codecrafters-claude-code/README.md)
+- [x] [CodeCrafters: Build Your Own Claude Code](./Codecrafters-claude-code/README.md)
