@@ -10,34 +10,33 @@ Lectures and assignments follow Spring 2025.
 | Path           | Content                                             | In git    |
 | -------------- | --------------------------------------------------- | --------- |
 | `slides-sp25/` | Official lecture repo: executable lectures and PDFs | Submodule |
-| `Digest/`      | My lecture notes                                    | Yes       |
 | `assignment*/` | Assignments, on top of the official starter repos   | Yes       |
 
 Executable lectures open in the official trace viewer. PDF lectures link to the lecture repo, which is also checked out locally as `slides-sp25/`.
 
 ## Lectures (Spring 2025)
 
-| #  | Topic                          | Slides       | My notes     |
-| -- | ------------------------------ | ------------ | ------------ |
-| 1  | Overview, tokenization         | [trace][l01] |              |
-| 2  | PyTorch, resource accounting   | [trace][l02] |              |
-| 3  | Architectures, hyperparameters | [pdf][l03]   | [notes][n03] |
-| 4  | Mixture of experts             | [pdf][l04]   |              |
-| 5  | GPUs                           | [pdf][l05]   |              |
-| 6  | Kernels, Triton                | [trace][l06] |              |
-| 7  | Parallelism                    | [pdf][l07]   |              |
-| 8  | Parallelism                    | [trace][l08] |              |
-| 9  | Scaling laws                   | [pdf][l09]   |              |
-| 10 | Inference                      | [trace][l10] |              |
-| 11 | Scaling laws                   | [pdf][l11]   | [notes][n11] |
-| 12 | Evaluation                     | [trace][l12] | [notes][n12] |
-| 13 | Data                           | [trace][l13] | [notes][n13] |
-| 14 | Data                           | [trace][l14] |              |
-| 15 | Alignment - SFT/RLHF           | [pdf][l15]   | [notes][n15] |
-| 16 | Alignment - RL                 | [pdf][l16]   | [notes][n16] |
-| 17 | Alignment - RL                 | [trace][l17] | [notes][n17] |
-| 18 | Guest: Junyang Lin             | —            |              |
-| 19 | Guest: Mike Lewis              | —            |              |
+| #  | Topic                          | Slides       |
+| -- | ------------------------------ | ------------ |
+| 1  | Overview, tokenization         | [trace][l01] |
+| 2  | PyTorch, resource accounting   | [trace][l02] |
+| 3  | Architectures, hyperparameters | [pdf][l03]   |
+| 4  | Mixture of experts             | [pdf][l04]   |
+| 5  | GPUs                           | [pdf][l05]   |
+| 6  | Kernels, Triton                | [trace][l06] |
+| 7  | Parallelism                    | [pdf][l07]   |
+| 8  | Parallelism                    | [trace][l08] |
+| 9  | Scaling laws                   | [pdf][l09]   |
+| 10 | Inference                      | [trace][l10] |
+| 11 | Scaling laws                   | [pdf][l11]   |
+| 12 | Evaluation                     | [trace][l12] |
+| 13 | Data                           | [trace][l13] |
+| 14 | Data                           | [trace][l14] |
+| 15 | Alignment - SFT/RLHF           | [pdf][l15]   |
+| 16 | Alignment - RL                 | [pdf][l16]   |
+| 17 | Alignment - RL                 | [trace][l17] |
+| 18 | Guest: Junyang Lin             | —            |
+| 19 | Guest: Mike Lewis              | —            |
 
 ## Assignments
 
@@ -75,13 +74,6 @@ A5 also has a [safety and RLHF supplement][a5s].
 [l15]: https://github.com/stanford-cs336/spring2025-lectures/blob/main/nonexecutable/2025%20Lecture%2015%20-%20RLHF%20Alignment.pdf
 [l16]: https://github.com/stanford-cs336/spring2025-lectures/blob/main/nonexecutable/2025%20Lecture%2016%20-%20RLVR.pdf
 [l17]: https://cs336.stanford.edu/spring2025-lectures/?trace=var/traces/lecture_17.json
-[n03]: Digest/Lecture%203.md
-[n11]: Digest/Lecture%2011.md
-[n12]: Digest/Lecture%2012.md
-[n13]: Digest/Lecture%2013.md
-[n15]: Digest/Lecture%2015.md
-[n16]: Digest/Lecture%2016.md
-[n17]: Digest/Lecture%2017.md
 [a1]: assignment1-basics/cs336_spring2025_assignment1_basics.pdf
 [a1c]: assignment1-basics/
 [a2]: assignment2-systems/cs336_spring2025_assignment2_systems.pdf
