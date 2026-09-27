@@ -9,7 +9,7 @@
 - [x] [MIT 6.S184 (2026): Generative AI with Stochastic Differential Equations](./MIT-6.S184/README.md)
 - [x] [Stanford CS106L (2024): Standard C++ Programming](./Stanford-CS106L/README.md)
 - [ ] [Stanford CS197 (2025): Computer Science Research](./Stanford-CS197/README.md)
-- [ ] [Stanford CS224N (2025): Natural Language Processing with Deep Learning](./Stanford-CS224N/README.md)
+- [ ] [Stanford CS224N (2026): Natural Language Processing with Deep Learning](./Stanford-CS224N/README.md)
 - [ ] [Stanford CS231N (2026): Deep Learning for Computer Vision](./Stanford-CS231N/README.md)
 - [ ] [Stanford CS336 (2025): Language Modeling from Scratch](./Stanford-CS336/README.md)
 - [ ] [UCB CS61A (2025): Structure and Interpretation of Computer Programs](./UCB-CS61A/README.md)
